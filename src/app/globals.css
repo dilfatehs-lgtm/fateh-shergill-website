@@ -1,0 +1,294 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Fateh Shergill — Warm Luxury (dark) design tokens
+
+   The palette is inverted, not replaced: the same cream and brass, with
+   near-black now carrying the page. The base is a WARM near-black (a trace
+   of red/yellow, never #000) so the brass sits in the same family rather
+   than glowing against neutral grey — that warmth is what keeps it reading
+   as elegant instead of generic-dark.
+
+   Every text pair below is verified against WCAG AA on its own surface;
+   ratios are noted inline.
+------------------------------------------------------------------- */
+
+@theme {
+  /* Surfaces — lightest to darkest, all warm-tinted */
+  --color-canvas: #12100d; /* page background — warm near-black */
+  --color-sand: #191612; /* alternating band (stats, approach) */
+  --color-surface: #1c1815; /* raised cards */
+  --color-ink: #0b0a08; /* deepest — contact + footer */
+  --color-ink-soft: #16130f; /* form fields on ink */
+
+  /* Text */
+  --color-fg: #f2ede4; /* warm off-white — 16.3:1 on canvas */
+  --color-fg-muted: #a8a096; /* 7.3:1 on canvas */
+
+  /*
+    The "invert" pair is for content sitting on a LIGHT fill — the primary
+    CTA, the header phone button, the mobile call bar. On a dark site those
+    flip: light background, dark text.
+  */
+  --color-fg-invert: #12100d; /* dark text on a light button */
+  --color-fg-invert-muted: #4a443c;
+
+  /* Brass — reads brighter on dark, so the text-safe tone is now lighter */
+  --color-brass: #b08d57; /* rules, icons, glyphs — 6.1:1 on canvas */
+  --color-brass-ink: #cba76b; /* text-safe brass — 8.4:1 on canvas */
+  --color-brass-soft: #6b5533; /* muted brass for borders and tints */
+
+  /* Utility */
+  --color-line: #302923; /* dividers and card edges on canvas/surface */
+  --color-line-invert: #2b2621; /* dividers on ink */
+
+  /*
+    Input borders specifically. A field's fill is only 1.05:1 against the
+    contact section, so the border is what makes the control findable —
+    WCAG 1.4.11 wants 3:1 for that. This hits 3.03:1. Do not darken it to
+    "tidy up" the form; the boxes stop being visible.
+  */
+  --color-field-line: #665c50;
+  --color-danger: #ff9b91; /* lightened for legibility on dark */
+  --color-success: #7fc4a3;
+
+  /* Type */
+  --font-display: var(--font-cormorant), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+
+  /* Spacious rhythm (density 3/10) */
+  --spacing-section: 7rem;
+
+  /* Motion tokens — one rhythm across the whole site */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-soft: cubic-bezier(0.55, 0, 0.55, 0.2);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor targets so the sticky header never covers a heading */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem; /* 17px — comfortable measure, no iOS auto-zoom */
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+  }
+
+  /* Prices, sqft, stats — prevents digit jitter in grids */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Visible, on-brand focus ring everywhere (never removed) */
+  :focus-visible {
+    outline: 2px solid var(--color-brass-ink);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background: var(--color-brass);
+    color: var(--color-fg-invert);
+  }
+
+  /* Tell the browser this is a dark UI so form controls, scrollbars and
+     the mobile URL bar match instead of flashing white. */
+  html {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  /* Small caps label used above every section heading */
+  .eyebrow {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-brass-ink);
+  }
+
+  /* Thin brass rule */
+  .hairline {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      var(--color-brass),
+      var(--color-brass-soft)
+    );
+  }
+}
+
+/* ------------------------------------------------------------------
+   Scroll-reveal system — CSS-driven, fail-safe.
+
+   Content is VISIBLE by default. Elements only start hidden once the
+   inline bootstrap script has added `.js-reveal` to <html>, proving the
+   reveal machinery is actually running. So if JS fails, hydration is
+   slow, or the tab's animation frames are throttled, text still shows —
+   it can never be stranded at opacity 0.
+
+   Animations use opacity + transform only: no layout, no CLS.
+------------------------------------------------------------------- */
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+  }
+}
+@keyframes reveal-down {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -22px, 0);
+  }
+}
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    transform: translate3d(22px, 0, 0);
+  }
+}
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    transform: translate3d(-22px, 0, 0);
+  }
+}
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes reveal-hairline {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Skyline line art. Every stroke carries pathLength="1", so this single
+   keyframe draws paths of wildly different lengths at the same rate.
+------------------------------------------------------------------- */
+@keyframes skyline-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.skyline path {
+  stroke-dasharray: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke; /* hairlines stay hairlines at any width */
+  animation: skyline-draw 2s var(--ease-out-soft) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* Portfolio grid crossfade when the filter tab changes */
+@keyframes grid-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* Gentle bob on the hero scroll cue */
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(7px);
+  }
+}
+
+@layer base {
+  /* Pre-reveal hidden state — gated on JS being alive. */
+  .js-reveal [data-reveal]:not(.is-visible) {
+    opacity: 0;
+  }
+
+  [data-reveal].is-visible {
+    animation: reveal-up 620ms var(--ease-out-soft) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  [data-reveal="down"].is-visible {
+    animation-name: reveal-down;
+  }
+  [data-reveal="left"].is-visible {
+    animation-name: reveal-left;
+  }
+  [data-reveal="right"].is-visible {
+    animation-name: reveal-right;
+  }
+  [data-reveal="fade"].is-visible {
+    animation-name: reveal-fade;
+  }
+  [data-reveal="hairline"].is-visible {
+    transform-origin: left;
+    animation: reveal-hairline 800ms var(--ease-out-soft) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+}
+
+/* ------------------------------------------------------------------
+   Reduced motion: no movement, everything visible immediately.
+------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Never hide, never animate — just show the content. */
+  .js-reveal [data-reveal]:not(.is-visible),
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+    animation: none !important;
+  }
+
+  /*
+    Skyline arrives fully drawn. The global duration override alone isn't
+    enough here — the per-path delays would still hold strokes invisible
+    for over a second, so the dash offset has to be cleared outright.
+  */
+  .skyline path {
+    animation: none !important;
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
