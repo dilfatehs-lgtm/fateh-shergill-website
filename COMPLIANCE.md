@@ -13,7 +13,7 @@ Rules referenced: the [Real Estate Services Rules](https://www.bclaws.gov.bc.ca/
 | Brokerage licensee name displayed prominently and legibly | RESA s.40(2) | Site header (every page) and footer |
 | Licensee identified by licensee name | RESA s.40(3) | Header, hero, footer |
 | Any office address shown must be the brokerage's | RESA s.40(4) | Footer address is the Broadway office — **verify the street address** |
-| All nine sales were done under Sutton | confirmed by Fateh 2026-07-20 | He has never been with another brokerage, so no prior-brokerage attribution issue |
+| All ten sales were done under Sutton | confirmed by Fateh 2026-07-20 | He has never been with another brokerage, so no prior-brokerage attribution issue |
 | Sale price not published without consent | GVR Rules of Cooperation | Price is hidden unless `priceConsent: true` is set on that listing. Default is off, so forgetting the flag withholds data rather than leaking it |
 | Listing Brokerage credited when advertising a co-operative sale | GVR Rules of Cooperation | `listedBy` renders as "Listed by …" on buyer-side cards. Buyer-side entries **without** it are filtered out of the site entirely |
 | No false or misleading advertising | RESA s.41 | Fabricated performance claims removed from placeholder data; `stats`, `note`, and `testimonials` all carry warnings in-file |
@@ -30,7 +30,7 @@ Rules referenced: the [Real Estate Services Rules](https://www.bclaws.gov.bc.ca/
 
 ### 1. Sale prices — the big one
 
-Every price is currently hidden. Cards and detail pages read "Sold" instead of a number. **The real figures from all nine MLS® reports are recorded in `listings.ts`** and will appear the moment you set `priceConsent: true` on a listing — nothing needs re-entering.
+Every price is currently hidden. Cards and detail pages read "Sold" instead of a number. **The real figures from all ten MLS® reports are recorded in `listings.ts`** and will appear the moment you set `priceConsent: true` on a listing — nothing needs re-entering.
 
 Greater Vancouver REALTORS® rules do not permit advertising a sale price without consent from **both the seller and the buyer**, and not before the sale is publicly registered. To show a price, set `priceConsent: true` on that listing in `src/data/listings.ts` and note where the consent is filed in `consentNote`.
 
@@ -40,26 +40,30 @@ If getting consent for older transactions is impractical, the site reads perfect
 
 The three buyer purchases (2133 W 57th, 7247 Inverness, 815 E 56th) are credited to their Listing Brokerages — Macdonald Realty, eXp Realty, and Dexter Realty respectively — read from the buyer reports. Each report names you as Buyer's Agent under Sutton Group–West Coast Realty. Confirm your board requires nothing further before advertising involvement in a co-operative sale.
 
-### 3. Source documents
+### 3. Imagery
 
-The six PDFs in `listings pdfs/` are MLS® **agent full reports**. They contain material that must never be published: commission structure, vendor name, REALTOR® remarks, and showing instructions. Only public-facing facts were transcribed — address, neighbourhood, type, beds, baths, floor area, year built, MLS® number, and sale date. The published pages were checked against a leak list to confirm none of the agent-only fields made it through.
+The four 2023 new-build duplexes are shown with **architectural renderings**, not photographs. Alt text reads "Exterior rendering" and a disclosure line appears under each gallery, so nothing implies a photo of the completed home — presenting a rendering as a photograph would be misleading under RESA s.41. This is applied automatically wherever a listing's imagery is flagged as a rendering.
+
+### 4. Source documents
+
+The ten PDFs in `listings pdfs/` (including the commercial report for 7235 Fraser) are MLS® **agent full reports**. They contain material that must never be published: commission structure, vendor name, REALTOR® remarks, and showing instructions. Only public-facing facts were transcribed — address, neighbourhood, type, beds, baths, floor area, year built, MLS® number, and sale date. The published pages were checked against a leak list to confirm none of the agent-only fields made it through.
 
 Keep the PDFs out of `public/` — anything in that folder is served to the open internet.
 
-### 4. Questions I couldn't answer for you
+### 5. Questions I couldn't answer for you
 
 - ~~**Personal Real Estate Corporation?**~~ **Resolved 2026-07-20: no PREC.** Fateh trades as an individual licensee, so RESA s.40(3) is satisfied by advertising under his licensee name alone — which the header, hero, and footer already do. Nothing further required. *If you incorporate a PREC later, this changes: the PREC's licensee name must then appear in advertising, and the site would need updating.*
 - ~~**Part of a team?**~~ **Resolved 2026-07-20: not on a team.** RESA s.40(5) does not apply. *If you join or form one, the team name must appear in all advertising.*
 - ~~**CREA member?**~~ **Resolved 2026-07-20: yes.** REALTOR® is now used in the About section and footer, with CREA's attribution statement in the footer. See "Trademark usage" below.
 - ~~**Licence number**~~ **Resolved 2026-07-20: 191002**, now shown in the footer disclosure.
 
-### 5. Copy you need to make true
+### 6. Copy you need to make true
 
 The About section is written to be *plausible*, not to be *you*. The line about working with "a deliberately small number of clients at a time" is a claim about your service. Under RESA s.41 it needs to be accurate. Rewrite it in your own words.
 
 Same for the four headline stats — they're advertising claims and must be substantiable from your transaction record.
 
-### 6. Ongoing duties
+### 7. Ongoing duties
 
 - Listing information must be kept **current**. If you later add active listings, expired ones must come down promptly.
 - You need the owner's consent before advertising any property that **is** offered for sale (RESA s.42). This matters the moment you add current listings — the present portfolio is past sales only.

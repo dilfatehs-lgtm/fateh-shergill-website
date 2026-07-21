@@ -46,3 +46,7 @@ next-env.d.ts
 
 # Claude Code tooling (bundled skills, local launch config) — not part of the site
 /.claude/
+
+# Source photography (94MB of originals). Optimised copies live in
+# public/listings/ and ARE committed; these masters stay local.
+/listing photos/

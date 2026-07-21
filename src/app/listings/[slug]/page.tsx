@@ -10,6 +10,7 @@ import {
   listings,
   getListing,
   canShowPrice,
+  isCommercial,
   type PropertyType,
 } from "@/data/listings";
 import { formatPrice, formatSoldDate, formatSqft } from "@/lib/format";
@@ -25,7 +26,13 @@ const propertyNoun: Record<PropertyType, string> = {
   Condo: "condo",
   Townhouse: "townhouse",
   Land: "lot",
+  Office: "office suite",
 };
+
+/** "An office suite" vs "A duplex" — pick the article by leading vowel. */
+function indefiniteArticle(noun: string): string {
+  return /^[aeiou]/i.test(noun) ? "An" : "A";
+}
 
 /** Prerender every listing at build time. */
 export async function generateStaticParams() {
@@ -64,18 +71,37 @@ export default async function ListingPage({
 
   const sqft = formatSqft(listing.sqft);
   const showPrice = canShowPrice(listing);
+  const photos = listing.photos ?? [];
+  const hero = photos[0];
+  const gallery = photos.slice(1);
+  const commercial = isCommercial(listing);
 
   const facts = [
-    { icon: BedDouble, label: "Bedrooms", value: String(listing.beds) },
-    {
-      icon: Bath,
-      label: "Bathrooms",
-      value:
-        listing.fullBaths !== undefined && listing.halfBaths !== undefined
-          ? `${listing.baths} (${listing.fullBaths} full, ${listing.halfBaths} half)`
-          : String(listing.baths),
-    },
-    ...(sqft ? [{ icon: Ruler, label: "Interior", value: sqft }] : []),
+    // Bed/bath only apply to residential.
+    ...(!commercial && listing.beds !== undefined
+      ? [{ icon: BedDouble, label: "Bedrooms", value: String(listing.beds) }]
+      : []),
+    ...(!commercial && listing.baths !== undefined
+      ? [
+          {
+            icon: Bath,
+            label: "Bathrooms",
+            value:
+              listing.fullBaths !== undefined && listing.halfBaths !== undefined
+                ? `${listing.baths} (${listing.fullBaths} full, ${listing.halfBaths} half)`
+                : String(listing.baths),
+          },
+        ]
+      : []),
+    ...(sqft
+      ? [
+          {
+            icon: Ruler,
+            label: commercial ? "Floor area" : "Interior",
+            value: sqft,
+          },
+        ]
+      : []),
     ...(listing.yearBuilt
       ? [{ icon: Home, label: "Year Built", value: String(listing.yearBuilt) }]
       : []),
@@ -138,11 +164,11 @@ export default async function ListingPage({
           {/* ── Media ─────────────────────────────────────────────── */}
           <Reveal delay={0.06}>
             <div className="mt-12 aspect-[16/9] w-full overflow-hidden bg-sand">
-              {listing.image ? (
+              {hero ? (
                 <div className="relative h-full w-full">
                   <Image
-                    src={listing.image}
-                    alt={`${listing.address}, ${listing.neighbourhood}`}
+                    src={hero.src}
+                    alt={`${hero.alt} — ${listing.address}, ${listing.neighbourhood}`}
                     fill
                     sizes="(max-width: 1024px) 100vw, 1152px"
                     className="object-cover"
@@ -173,11 +199,42 @@ export default async function ListingPage({
             </div>
           </Reveal>
 
+          {/* ── Gallery ───────────────────────────────────────────── */}
+          {gallery.length > 0 && (
+            <Reveal delay={0.06}>
+              <ul className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
+                {gallery.map((photo) => (
+                  <li
+                    key={photo.src}
+                    className="relative aspect-[4/3] overflow-hidden bg-sand"
+                  >
+                    <Image
+                      src={photo.src}
+                      alt={`${photo.alt} — ${listing.address}`}
+                      fill
+                      sizes="(max-width: 768px) 50vw, 33vw"
+                      className="object-cover"
+                      loading="lazy"
+                    />
+                    <span className="absolute bottom-0 left-0 bg-ink/75 px-2.5 py-1 text-[0.6rem] tracking-[0.14em] text-fg uppercase backdrop-blur-sm">
+                      {photo.alt}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          )}
+
+          {/* Qualifies the imagery where it isn't photography (RESA s.41). */}
+          {listing.mediaNote && (
+            <p className="mt-4 text-xs text-fg-muted">{listing.mediaNote}</p>
+          )}
+
           {/* ── Facts + description ───────────────────────────────── */}
           <div className="mt-16 grid gap-14 lg:grid-cols-12 lg:gap-20">
             <Reveal delay={0.04} className="lg:col-span-7">
               <h2 className="font-display text-3xl font-light">
-                About this home
+                {commercial ? "About this property" : "About this home"}
               </h2>
               {listing.description ? (
                 <p className="mt-6 max-w-[62ch] text-fg-muted">
@@ -185,11 +242,14 @@ export default async function ListingPage({
                 </p>
               ) : (
                 <p className="mt-6 max-w-[62ch] text-fg-muted">
-                  A {propertyNoun[listing.propertyType]} in{" "}
+                  {indefiniteArticle(propertyNoun[listing.propertyType])}{" "}
+                  {propertyNoun[listing.propertyType]} in{" "}
                   {listing.neighbourhood}
                   {listing.yearBuilt ? `, built in ${listing.yearBuilt}` : ""}.{" "}
-                  {listing.beds} bedrooms and {listing.baths} bathrooms across{" "}
-                  {sqft ?? "the main floors"}.{" "}
+                  {/* Bed/bath phrasing only makes sense for residential. */}
+                  {commercial
+                    ? `${sqft ?? "Flexible"} of strata office space.`
+                    : `${listing.beds} bedrooms and ${listing.baths} bathrooms across ${sqft ?? "the main floors"}.`}{" "}
                   {listing.side === "listing"
                     ? "Listed and sold on behalf of the seller."
                     : "Purchased on behalf of the buyer."}

@@ -37,7 +37,7 @@ Everything you'll want to change lives in two files. Search for `TODO` to find e
 
 ### 2. `src/data/listings.ts` — your portfolio
 
-Loaded with your nine real sales — six seller-side, three buyer-side — transcribed from the MLS® agent reports in `listings pdfs/`. Each has its own page at `/listings/<slug>`, prerendered at build time and linked from its card.
+Loaded with your ten real sales — seven seller-side (including one commercial office) and three buyer-side — transcribed from the MLS® agent reports in `listings pdfs/`. Each has its own page at `/listings/<slug>`, prerendered at build time and linked from its card.
 
 **Sale prices are recorded but not displayed** — every entry carries `priceConsent: false`, so cards and detail pages read "Sold" instead of a number. Flip the flag per listing once you hold consent from both parties; the figures are already in place.
 
@@ -46,16 +46,20 @@ Deliberately excluded from the site, because the agent reports are agent-only do
 - `side: "listing"` → you represented the **seller** (shows under "Sold Listings")
 - `side: "buyer"` → you represented the **buyer** (shows under "Buyer Represented", and requires `listedBy`)
 
-Optional per listing: `note` (one line on the card), `description` (prose on the detail page), `featured: true`, `image`, `gallery`.
+Optional per listing: `note` (one line on the card), `description` (prose on the detail page), `featured: true`. Imagery is attached automatically from `src/data/photos.ts` by slug.
 
 Also in this file:
 
-- `stats` — four headline numbers (homes sold, volume, years licensed, avg days on market). They currently show `—`. Set `value: null` to hide one entirely.
+- `stats` — three headline numbers, all derived: 10 Transactions Closed, $18M+ Total Volume, and Years Licensed (computed from `site.licensedSince`, so it never goes stale). Set `value: null` to hide one.
 - `testimonials` — empty, so the section is hidden. Add real, attributed quotes and it appears automatically.
 
-### 3. Photography (optional, add any time)
+### 3. Photography
 
-Drop files in `public/listings/` and set `image: "/listings/your-file.jpg"` on the listing. Until then each card renders a typographic neighbourhood tile — deliberate, not a broken image. The media area is a fixed 4:3 box either way, so adding photos causes **no layout shift**.
+Six listings have imagery; four don't yet (2133 W 57th, 7247 Inverness, 815 E 56th, 7235 Fraser) and render a typographic neighbourhood tile instead — deliberate, not a broken image. The media box is a fixed aspect ratio either way, so adding photos causes **no layout shift**.
+
+**To add more:** drop files into `listing photos/<folder>/` and re-run the optimiser, which de-duplicates, orders them (exterior first, floor plans last), resizes to 1920px and writes `public/listings/<slug>/` plus the manifest at `src/data/photos.ts`.
+
+⚠️ **The 2023 duplexes (670, 672, 2646, 2648) have architectural renderings, not photographs.** Their alt text says so and a disclosure line appears under the gallery — required so the imagery isn't presented as photos of the finished home. If you get real photos, drop them in and the disclosure disappears automatically.
 
 Your headshot: put it in `public/`, then set `PORTRAIT_SRC` at the top of `src/components/About.tsx`.
 
@@ -81,12 +85,11 @@ Read **[COMPLIANCE.md](COMPLIANCE.md)** before you put real transactions on this
 
 ## Before launch
 
-- [ ] Confirm the six listings are all seller-side, and send any buyer-side deals
-- [ ] Decide on sale-price consent (see COMPLIANCE.md) and fill in the four headline stats
+- [ ] Decide on sale-price consent (see COMPLIANCE.md)
 - [ ] Confirm the Broadway office street address (phone and licence are set)
 - [x] Web3Forms key added locally & tested — **still TODO: set it on the host at deploy**
 - [ ] Set your real domain in `metadataBase` (`src/app/layout.tsx`)
-- [ ] Add a headshot and listing photography
+- [ ] Add a headshot; photography for 2133 W 57th, 7247 Inverness, 815 E 56th, 7235 Fraser (and real photos for the 4 duplexes currently shown as renderings)
 - [ ] Rewrite the About copy in `src/components/About.tsx` — it's written to be plausible, not to be *you*
 - [ ] Work through [COMPLIANCE.md](COMPLIANCE.md): price consents and Listing Brokerage credits
 - [ ] Have your managing broker review the live site and the privacy policy

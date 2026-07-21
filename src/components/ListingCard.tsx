@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BedDouble, Bath, Ruler, MapPin } from "lucide-react";
-import { canShowPrice, type Listing } from "@/data/listings";
+import { BedDouble, Bath, Ruler, MapPin, Building2 } from "lucide-react";
+import { canShowPrice, isCommercial, type Listing } from "@/data/listings";
 import { formatPrice, formatSoldDate, formatSqft } from "@/lib/format";
 
 /**
@@ -17,6 +17,9 @@ import { formatPrice, formatSoldDate, formatSqft } from "@/lib/format";
  */
 export default function ListingCard({ listing }: { listing: Listing }) {
   const sqft = formatSqft(listing.sqft);
+  const cover = listing.photos?.[0];
+  // Commercial (office/land) has no bed or bath count to show.
+  const commercial = isCommercial(listing);
 
   return (
     <article
@@ -29,10 +32,10 @@ export default function ListingCard({ listing }: { listing: Listing }) {
     >
       {/* Media */}
       <div className="relative aspect-[4/3] overflow-hidden bg-sand">
-        {listing.image ? (
+        {cover ? (
           <Image
-            src={listing.image}
-            alt={`${listing.address}, ${listing.neighbourhood}`}
+            src={cover.src}
+            alt={`${cover.alt} — ${listing.address}, ${listing.neighbourhood}`}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.045] motion-reduce:transform-none motion-reduce:transition-none"
@@ -103,26 +106,44 @@ export default function ListingCard({ listing }: { listing: Listing }) {
           </p>
         )}
 
-        {/* Specs */}
+        {/* Specs — commercial has no bed/bath counts, so show building type */}
         <dl className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-line pt-4 text-sm text-fg-muted">
-          <div className="flex items-center gap-1.5">
-            <BedDouble
-              className="size-4 text-brass"
-              strokeWidth={1.5}
-              aria-hidden="true"
-            />
-            <dt className="sr-only">Bedrooms</dt>
-            <dd className="tnum">{listing.beds}</dd>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Bath
-              className="size-4 text-brass"
-              strokeWidth={1.5}
-              aria-hidden="true"
-            />
-            <dt className="sr-only">Bathrooms</dt>
-            <dd className="tnum">{listing.baths}</dd>
-          </div>
+          {commercial ? (
+            <div className="flex items-center gap-1.5">
+              <Building2
+                className="size-4 text-brass"
+                strokeWidth={1.5}
+                aria-hidden="true"
+              />
+              <dt className="sr-only">Property type</dt>
+              <dd>{listing.propertyType}</dd>
+            </div>
+          ) : (
+            <>
+              {listing.beds !== undefined && (
+                <div className="flex items-center gap-1.5">
+                  <BedDouble
+                    className="size-4 text-brass"
+                    strokeWidth={1.5}
+                    aria-hidden="true"
+                  />
+                  <dt className="sr-only">Bedrooms</dt>
+                  <dd className="tnum">{listing.beds}</dd>
+                </div>
+              )}
+              {listing.baths !== undefined && (
+                <div className="flex items-center gap-1.5">
+                  <Bath
+                    className="size-4 text-brass"
+                    strokeWidth={1.5}
+                    aria-hidden="true"
+                  />
+                  <dt className="sr-only">Bathrooms</dt>
+                  <dd className="tnum">{listing.baths}</dd>
+                </div>
+              )}
+            </>
+          )}
           {sqft && (
             <div className="flex items-center gap-1.5">
               <Ruler

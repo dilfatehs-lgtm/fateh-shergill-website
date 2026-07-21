@@ -44,6 +44,7 @@
  */
 
 import { site } from "./site";
+import { photosBySlug } from "./photos";
 
 export type ListingSide = "listing" | "buyer";
 
@@ -52,7 +53,22 @@ export type PropertyType =
   | "Townhouse"
   | "Condo"
   | "Duplex"
-  | "Land";
+  | "Land"
+  | "Office";
+
+/** Commercial types have no bed/bath counts, so those fields are skipped. */
+export const COMMERCIAL_TYPES: PropertyType[] = ["Office", "Land"];
+
+export function isCommercial(listing: Listing): boolean {
+  return COMMERCIAL_TYPES.includes(listing.propertyType);
+}
+
+export interface ListingPhoto {
+  /** Path under /public, e.g. "/listings/<slug>/01.jpg" */
+  src: string;
+  /** Real alt text — says "rendering" where the image is a rendering. */
+  alt: string;
+}
 
 export interface Listing {
   id: string;
@@ -74,9 +90,10 @@ export interface Listing {
   consentNote?: string;
   /** ISO date */
   soldDate: string;
-  beds: number;
+  /** Optional — commercial listings (office, land) have no bed/bath count. */
+  beds?: number;
   /** Total bath count, shown on cards. */
-  baths: number;
+  baths?: number;
   fullBaths?: number;
   halfBaths?: number;
   sqft?: number;
@@ -87,10 +104,16 @@ export interface Listing {
   side: ListingSide;
   /** REQUIRED for buyer-side entries — the Listing Brokerage's name. */
   listedBy?: string;
-  /** Card/hero image. Photos are supplied separately. */
-  image?: string;
-  /** Gallery images for the detail page. */
-  gallery?: string[];
+  /**
+   * Ordered images. The first is the card thumbnail and the detail-page hero;
+   * the rest form the gallery. Empty/absent renders the typographic tile.
+   */
+  photos?: ListingPhoto[];
+  /**
+   * Shown under the gallery when the imagery needs qualifying — e.g. the
+   * 2023 new-builds were marketed with architectural renderings, not photos.
+   */
+  mediaNote?: string;
   /** One short, substantiable line shown on the card. */
   note?: string;
   /** Longer description for the detail page. Yours to write. */
@@ -99,6 +122,28 @@ export interface Listing {
 }
 
 const rawListings: Listing[] = [
+  // ─── COMMERCIAL ───────────────────────────────────────────────────────────
+  // Fateh's first-ever sale. Listed 2022-05-20, sold in 14 days.
+  {
+    id: "7235-fraser",
+    slug: "7235-fraser-street",
+    address: "7235 Fraser Street",
+    neighbourhood: "South Vancouver",
+    city: "Vancouver",
+    price: 750000,
+    listPrice: 778800,
+    priceConsent: false,
+    soldDate: "2022-06-03",
+    sqft: 802,
+    yearBuilt: 1997,
+    mls: "C8044440",
+    propertyType: "Office",
+    side: "listing",
+    note: "My first sale — a strata office suite, sold in 14 days.",
+    featured: true,
+  },
+
+  // ─── RESIDENTIAL — SELLER REPRESENTED ─────────────────────────────────────
   {
     id: "670-e-52",
     slug: "670-e-52nd-avenue",
@@ -295,10 +340,31 @@ const rawListings: Listing[] = [
 ];
 
 /**
+ * Attach imagery from the generated manifest, then apply the compliance gate.
+ *
+ * Where the supplied imagery is architectural renderings rather than
+ * photographs, a disclosure line is attached automatically — saying "photo"
+ * of a rendering would be misleading advertising under RESA s.41.
+ */
+const RENDERING_DISCLOSURE =
+  "Images are architectural renderings from the original marketing material, not photographs of the completed home.";
+
+const withPhotos: Listing[] = rawListings.map((l) => {
+  const photos = photosBySlug[l.slug];
+  if (!photos?.length) return l;
+  const hasRenderings = photos.some((p) => /rendering/i.test(p.alt));
+  return {
+    ...l,
+    photos,
+    mediaNote: l.mediaNote ?? (hasRenderings ? RENDERING_DISCLOSURE : undefined),
+  };
+});
+
+/**
  * Compliance gate. A buyer-side entry with no Listing Brokerage credit is
  * withheld rather than published unattributed — the safe failure direction.
  */
-export const listings: Listing[] = rawListings.filter((l) => {
+export const listings: Listing[] = withPhotos.filter((l) => {
   if (l.side === "buyer" && !l.listedBy?.trim()) {
     if (process.env.NODE_ENV !== "production") {
       console.warn(
@@ -333,20 +399,21 @@ function yearsLicensed(): number {
  * Headline stats. These are advertising claims under RESA s.41, so they must
  * be substantiable from your transaction record.
  *
- * Values are derived from the nine sales in this file plus your licence date:
- *   • Homes Closed  = 9 (6 seller-side + 3 buyer-side). "Closed" not "Sold",
- *     because on the three buyer deals you represented the purchaser.
- *   • Total Volume  = sum of all nine sale prices = $17,334,880 → "$17M+"
+ * Derived from the ten sales in this file plus your licence date:
+ *   • Transactions Closed = 10 (7 seller-side incl. one commercial office,
+ *     3 buyer-side). "Transactions", not "Homes" — one is a commercial
+ *     office suite, and on the buyer deals you represented the purchaser.
+ *   • Total Volume = sum of all ten sale prices = $18,084,880 → "$18M+"
  *     (an aggregate; it discloses no individual property's price, so it is
  *     not subject to the per-listing price-consent rule).
  *   • Years Licensed = computed from site.licensedSince, so it stays current.
  *
- * If you have done more deals than the nine here, update these to your full
+ * If you have done more deals than the ten here, update these to your full
  * record. Leave `value` as null to hide a stat entirely.
  */
 export const stats: { value: string | null; label: string }[] = [
-  { value: "9", label: "Homes Closed" },
-  { value: "$17M+", label: "Total Volume" },
+  { value: "10", label: "Transactions Closed" },
+  { value: "$18M+", label: "Total Volume" },
   { value: String(yearsLicensed()), label: "Years Licensed" },
 ];
 
