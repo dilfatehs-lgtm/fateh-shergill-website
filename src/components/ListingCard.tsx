@@ -158,7 +158,7 @@ export default function ListingCard({ listing }: { listing: Listing }) {
         </dl>
 
         <p className="mt-4 text-xs tracking-wide text-fg-muted">
-          {listing.propertyType} · {formatSoldDate(listing.soldDate)}
+          {listing.propertyType} · Sold {new Date(listing.soldDate).getFullYear()}
         </p>
 
         {/* Cooperating-brokerage credit, required when advertising a sale

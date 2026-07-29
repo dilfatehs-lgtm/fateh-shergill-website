@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { EASE_OUT } from "@/lib/motion";
+import Image from "next/image";
 import { Menu, X, Phone } from "lucide-react";
 import { site } from "@/data/site";
 
@@ -77,14 +78,27 @@ export default function Header() {
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
         <a
           href={homeHref}
-          className="group flex flex-col leading-none"
+          className="group flex items-center gap-3"
           aria-label={`${site.name} — home`}
         >
-          <span className="font-display text-xl tracking-wide text-fg sm:text-2xl">
-            {site.name}
+          <span className="relative size-12 shrink-0 sm:size-14">
+            <Image
+              src="/brand/mark.png"
+              alt=""
+              fill
+              sizes="44px"
+              className="object-contain"
+              priority
+              unoptimized
+            />
           </span>
-          <span className="mt-1 text-[0.62rem] tracking-[0.22em] text-fg-muted uppercase">
-            {site.brokerage}
+          <span className="flex flex-col leading-none">
+            <span className="font-display text-xl tracking-wide text-fg sm:text-2xl">
+              {site.name}
+            </span>
+            <span className="mt-1 text-[0.62rem] tracking-[0.22em] text-fg-muted uppercase">
+              {site.brokerage}
+            </span>
           </span>
         </a>
 

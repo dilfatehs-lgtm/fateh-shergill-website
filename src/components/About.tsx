@@ -4,8 +4,8 @@ import { Reveal, HairlineReveal, RevealGroup, RevealItem } from "./Reveal";
 
 /**
  * Set this to your headshot once you have one, e.g. "/fateh.jpg" in /public.
- * Until then the portrait frame renders a typographic monogram at the same
- * aspect ratio, so dropping the photo in causes no layout shift.
+ * Until then the portrait frame renders the brand mark (/brand/mark.png) at
+ * the same aspect ratio, so dropping the photo in causes no layout shift.
  */
 const PORTRAIT_SRC: string | null = null; // TODO: "/fateh.jpg"
 
@@ -22,7 +22,9 @@ export default function About() {
                 aria-hidden="true"
                 className="absolute -top-4 -left-4 hidden h-full w-full border border-brass-soft sm:block"
               />
-              <div className="relative aspect-[4/5] overflow-hidden bg-sand">
+              <div
+                className={`relative overflow-hidden bg-sand ${PORTRAIT_SRC ? "aspect-[4/5]" : "aspect-square"}`}
+              >
                 {PORTRAIT_SRC ? (
                   <Image
                     src={PORTRAIT_SRC}
@@ -33,19 +35,18 @@ export default function About() {
                     priority={false}
                   />
                 ) : (
-                  <div
-                    className="flex h-full w-full flex-col items-center justify-center gap-5"
-                    style={{
-                      background:
-                        "linear-gradient(150deg, #221d17 0%, #2b2319 55%, #1a1613 100%)",
-                    }}
-                  >
-                    <span className="font-display text-[clamp(4rem,12vw,7rem)] leading-none font-light text-fg/40">
-                      FS
-                    </span>
-                    <span className="text-[0.62rem] tracking-[0.22em] text-fg-muted uppercase">
-                      Portrait to come
-                    </span>
+                  <div className="flex h-full w-full items-center justify-center bg-canvas p-4">
+                    <div className="relative h-full w-full">
+                      <Image
+                        src="/brand/mark.png"
+                        alt={`${site.name} logo mark`}
+                        fill
+                        sizes="(max-width: 1024px) 60vw, 24vw"
+                        className="object-contain"
+                        priority={false}
+                        unoptimized
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -57,31 +58,39 @@ export default function About() {
             <Reveal>
               <p className="eyebrow">About</p>
               <h2 className="mt-5 font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.08] font-light">
-                Straight answers, and the patience to get it right
+                Here to help
               </h2>
             </Reveal>
 
             <HairlineReveal className="mt-8 w-40" />
 
             <Reveal delay={0.06}>
-              {/* TODO: replace this copy with your own story — it currently
-                  describes a generalist broker and should be specific to you. */}
               <div className="mt-8 space-y-5 text-fg-muted [&>p]:max-w-[62ch]">
                 <p>
-                  I&rsquo;m {site.name}, a licensed real estate broker
-                  {site.creaMember && " and REALTOR®"} with{" "}
-                  <span className="text-fg">{site.brokerage}</span> out of the{" "}
-                  {site.office} in {site.city}. I work with a deliberately
-                  small number of clients at a time, which means the person you
-                  meet at the first showing is the same person negotiating your
-                  contract and standing beside you at completion.
+                  I&rsquo;m {site.name}, a licensed
+                  {site.creaMember ? " REALTOR®" : " real estate broker"} with{" "}
+                  <span className="text-fg">{site.brokerage}</span> ({site.office}
+                  ). Before real estate, I worked construction sites as a
+                  teenager and I&rsquo;ve since worked alongside builders
+                  bringing a number of new homes to this city.
                 </p>
                 <p>
-                  A home is rarely just a transaction. It&rsquo;s a school
-                  catchment, a commute, a mortgage renewal five years out, and
-                  often the largest single decision a family will make. My job
-                  is to give you an honest read on all of it — including when
-                  the right advice is to wait.
+                  That background is why I work well with a specific kind of
+                  client: people sitting on a lot with development potential
+                  who are ready to sell, developers looking for their next
+                  acquisition to bring new homes to market, and buyers
+                  interested in a multiplex unit. I understand the numbers and
+                  the timelines from the building and the marketing side of
+                  things.
+                </p>
+                <p>
+                  I work closely with many people in the industry and forge
+                  personal relationships with many I work with — which is
+                  exactly the kind of relationship I want with everyone I take
+                  on. I&rsquo;m fluent in English, Punjabi and Hindi, and happy
+                  to work with you in whichever&rsquo;s easiest. Call me today
+                  and we can chat about how I can help you with your real
+                  estate goals.
                 </p>
               </div>
             </Reveal>
