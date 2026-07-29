@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { LISTINGS } from "@/data/listings";
+import { listings } from "@/data/listings";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://fatehshergill.com";
@@ -19,7 +19,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const listingPages: MetadataRoute.Sitemap = LISTINGS.map((listing) => ({
+  const listingPages: MetadataRoute.Sitemap = listings.map((listing) => ({
     url: `${baseUrl}/listings/${listing.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
