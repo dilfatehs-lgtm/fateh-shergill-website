@@ -81,7 +81,7 @@ export default function Header() {
           className="group flex items-center gap-3"
           aria-label={`${site.name} — home`}
         >
-          <span className="relative size-12 shrink-0 sm:size-14">
+          <span className="relative size-14 shrink-0 sm:size-16">
             <Image
               src="/brand/mark.png"
               alt=""
