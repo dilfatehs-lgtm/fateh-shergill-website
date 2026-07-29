@@ -15,7 +15,7 @@ export const site = {
 
   phone: "+1 (604) 322-6901",
   phoneDisplay: "604.322.6901",
-  email: "dilfateh@hotmail.com",
+  email: "fateh@fatehshergill.com",
 
   // TODO: confirm the Broadway office street address
   officeAddress: {
@@ -44,7 +44,7 @@ export const site = {
 
   /**
    * Web3Forms access key. Free, no backend needed.
-   * 1. Go to https://web3forms.com  2. Enter dilfateh@hotmail.com
+   * 1. Go to https://web3forms.com  2. Enter fateh@fatehshergill.com
    * 3. Paste the key you receive into .env.local as:
    *      NEXT_PUBLIC_WEB3FORMS_KEY=your-key-here
    * Until this is set, the form shows a friendly "email me directly" fallback.
