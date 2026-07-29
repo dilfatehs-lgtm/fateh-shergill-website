@@ -20,12 +20,11 @@ export default function Contact() {
                 Get in touch
               </p>
               <h2 className="mt-5 font-display text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.08] font-light text-fg">
-                Let&rsquo;s talk about what you&rsquo;re trying to do
+                Let&rsquo;s talk
               </h2>
               <p className="mt-6 max-w-[52ch] text-fg-muted">
-                Whether you&rsquo;re six weeks or two years out, a short
-                conversation costs nothing and usually saves a lot. No pressure,
-                no drip campaign.
+                Whether you&rsquo;re a few weeks or a few years out, I am here
+                to listen.
               </p>
             </Reveal>
 
