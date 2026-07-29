@@ -75,18 +75,18 @@ export default function Header() {
       }`}
       style={{ paddingTop: "env(safe-area-inset-top)" }}
     >
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
+      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-6 lg:px-10">
         <a
           href={homeHref}
           className="group flex items-center gap-3"
           aria-label={`${site.name} — home`}
         >
-          <span className="relative size-14 shrink-0 sm:size-16">
+          <span className="relative size-16 shrink-0 sm:size-20">
             <Image
               src="/brand/mark.png"
               alt=""
               fill
-              sizes="44px"
+              sizes="80px"
               className="object-contain"
               priority
               unoptimized
