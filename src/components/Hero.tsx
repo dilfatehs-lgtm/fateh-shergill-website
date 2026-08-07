@@ -22,6 +22,24 @@ export default function Hero() {
       id="top"
       className="relative flex min-h-dvh items-center overflow-hidden pt-28 pb-20"
     >
+      {/* Generated atmosphere shot — dusk over the North Shore, dimmed hard
+          so it reads as depth behind the brass skyline, never competes with
+          it. Deliberately the back-most layer; everything else paints on
+          top of it. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-30 bg-cover bg-[center_70%] opacity-90"
+        style={{ backgroundImage: "url(/brand/hero-skyline.jpg)" }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-30"
+        style={{
+          background:
+            "linear-gradient(to bottom, rgba(18,16,13,0.55) 0%, rgba(18,16,13,0.35) 35%, rgba(18,16,13,0.75) 75%, rgba(18,16,13,0.96) 100%)",
+        }}
+      />
+
       {/* Brass glow bleeding out of the top-right — pure CSS, no image
           weight, no layout cost. Low alpha so it reads as depth, not colour. */}
       <div
